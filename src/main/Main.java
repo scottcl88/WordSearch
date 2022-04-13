@@ -14,6 +14,7 @@ import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import javax.swing.*;
 
@@ -51,6 +52,7 @@ public class Main extends JPanel {
 
 		CreatePanels();
 		GenerateWords();
+		FillSpacesWithLetters();
 
 		JPanel mainPanel3 = new JPanel();
 		mainPanel3.setBorder(BorderFactory.createEmptyBorder(GAP, 15, GAP, 15));
@@ -90,32 +92,49 @@ public class Main extends JPanel {
 		}
 	}
 
+	private void FillSpacesWithLetters() {
+		Random r = new Random();
+
+		
+		for (int row = 0; row < fieldGrid.length; row++) {
+			for (int col = 0; col < fieldGrid[row].length; col++) {
+				if(fieldGrid[row][col].getText().isBlank()) {
+					int randomItem = r.nextInt(words.length);
+					String randomWord = words[randomItem];		
+					randomItem = r.nextInt(randomWord.length());
+					String randomChar = randomWord.charAt(randomItem)+"";
+					fieldGrid[row][col].setText(randomChar.toUpperCase());					
+				}
+			}
+		}
+	}
+
 	private void GenerateWords() {
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {
 				fieldGrid[row][col].setText("");
 			}
 		}
-		//int[] rowsUsed = new int[MAX_ROWS];
+		// int[] rowsUsed = new int[MAX_ROWS];
 		List<Point> pointsUsed = new ArrayList<Point>();
 		for (int w = 0; w < words.length; w++) {
 			int randDirection = (int) (Math.random() * (2 - 1 + 1) + 1);
 			boolean horizontal = randDirection == 1;
-			
+
 			String word = words[w];
 			word = word.toUpperCase();
-			
+
 			int maxRow = MAX_ROWS - 1;
-			int maxCol = MAX_COLS - 1;//word.length();
-			
-			if(horizontal) {
+			int maxCol = MAX_COLS - 1;// word.length();
+
+			if (horizontal) {
 				maxCol -= word.length();
-			}else {
+			} else {
 				maxRow -= word.length();
 			}
-			
-			int randRow = 0;//(int) (Math.random() * (maxRow - 0 + 1) + 0);
-			int randCol = 0;//(int) (Math.random() * (maxCol - 0 + 1) + 0);
+
+			int randRow = 0;// (int) (Math.random() * (maxRow - 0 + 1) + 0);
+			int randCol = 0;// (int) (Math.random() * (maxCol - 0 + 1) + 0);
 //			System.out.println("MAX_ROWS: " + MAX_ROWS + " - " + word.length());
 //			System.out.println("Randrow: " + randRow + " - " + randCol);	
 			boolean valid = false;
@@ -124,32 +143,34 @@ public class Main extends JPanel {
 				randRow = (int) (Math.random() * (maxRow - 0 + 1) + 0);
 				randCol = (int) (Math.random() * (maxCol - 0 + 1) + 0);
 				System.out.println("RanCol selected: " + randCol);
-				
-					boolean conflict = false;
-					int colCheck = randCol;
-					int rowCheck = randRow;
-					for (int l = 0; l < word.length(); l++) {
-						final int testRow = rowCheck;
-						final int testCol = colCheck;
-						if (pointsUsed.stream().filter(p -> p.y == testRow && p.x == testCol).findFirst().isPresent()) {
+
+				boolean conflict = false;
+				int colCheck = randCol;
+				int rowCheck = randRow;
+				for (int l = 0; l < word.length(); l++) {
+					final int testRow = rowCheck;
+					final int testCol = colCheck;
+					if (pointsUsed.stream().filter(p -> p.y == testRow && p.x == testCol).findFirst().isPresent()) {
+						if (fieldGrid[rowCheck][colCheck].getText() != word.charAt(l) + "") {
 							valid = false;
 							conflict = true;
 							System.out.println("Point conflict found");
 							break;
 						}
-						if (horizontal) {
-							colCheck++;
-						}else {
-							rowCheck++;
-						}
+					}
+					if (horizontal) {
+						colCheck++;
+					} else {
+						rowCheck++;
+					}
 //						if(randCol > maxCol) {
 //							randCol = maxCol;
 //						}
-					}
-					if (!conflict) {
-						valid = true;
-					}
-				
+				}
+				if (!conflict) {
+					valid = true;
+				}
+
 				tries++;
 				if (tries >= 99) {
 					System.out.println("Tries is more than 100");
@@ -161,7 +182,7 @@ public class Main extends JPanel {
 					fieldGrid[randRow][randCol].setText(word.charAt(l) + "");
 					if (horizontal) {
 						randCol++;
-					}else {
+					} else {
 						randRow++;
 					}
 				}
@@ -176,6 +197,7 @@ public class Main extends JPanel {
 	private class LetterTextField extends JTextField {
 
 		boolean selected = false;
+		boolean submitted = false;
 		int row, col;
 
 		public LetterTextField(int row, int col) {
@@ -277,6 +299,16 @@ public class Main extends JPanel {
 					Map attributes = font.getAttributes();
 					attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
 					wordLabelList[w].setFont(font.deriveFont(attributes));
+				}
+			}
+
+			for (int row = 0; row < fieldGrid.length; row++) {
+				for (int col = 0; col < fieldGrid[row].length; col++) {
+					if (fieldGrid[row][col].selected) {
+						fieldGrid[row][col].submitted = true;
+						fieldGrid[row][col].selected = false;
+						fieldGrid[row][col].setBackground(Color.GRAY);
+					}
 				}
 			}
 		}
