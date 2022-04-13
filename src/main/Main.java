@@ -2,12 +2,10 @@ package main;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.font.TextAttribute;
@@ -20,8 +18,10 @@ import javax.swing.*;
 
 public class Main extends JPanel {
 
-	private static final char[] alphabet = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
-			'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' };
+	/**
+	 * Default
+	 */
+	private static final long serialVersionUID = -7478413237523422826L;
 	private static final String[] words = { "benji", "macie", "betsy" };
 	private static final int CLUSTER = 3;
 	private static final int MAX_ROWS = 9;
@@ -39,7 +39,6 @@ public class Main extends JPanel {
 	public Main() {
 		JPanel mainPanel = new JPanel(new GridLayout(CLUSTER, CLUSTER));
 		JPanel mainPanel2 = new JPanel(new GridLayout(CLUSTER, CLUSTER));
-//	        mainPanel.setBorder(BorderFactory.createEmptyBorder(GAP, GAP, GAP, GAP));
 		mainPanel.setBackground(BG);
 		panels = new JPanel[CLUSTER][CLUSTER];
 		for (int i = 0; i < panels.length; i++) {
@@ -56,7 +55,6 @@ public class Main extends JPanel {
 
 		JPanel mainPanel3 = new JPanel();
 		mainPanel3.setBorder(BorderFactory.createEmptyBorder(GAP, 15, GAP, 15));
-//	        mainPanel3.setLayout(new GridLayout(1, 5, 1, 1));
 		mainPanel3.setLayout(new BoxLayout(mainPanel3, BoxLayout.Y_AXIS));
 		JLabel wordsLabel = new JLabel("Words");
 		Font font = wordsLabel.getFont();
@@ -74,11 +72,9 @@ public class Main extends JPanel {
 		mainPanel3.add(new JButton(new ScrambleAction("Scramble")), BorderLayout.PAGE_END);
 		mainPanel2.add(mainPanel3);
 
-//	        mainPanel.add(mainPanel2, BorderLayout.WEST);
 		setLayout(new BorderLayout());
 		add(mainPanel, BorderLayout.WEST);
 		add(mainPanel2, BorderLayout.EAST);
-//	        add(new JButton(new SolveAction("Solve")), BorderLayout.PAGE_END);
 	}
 
 	private void CreatePanels() {
@@ -95,15 +91,14 @@ public class Main extends JPanel {
 	private void FillSpacesWithLetters() {
 		Random r = new Random();
 
-		
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {
-				if(fieldGrid[row][col].getText().isBlank()) {
+				if (fieldGrid[row][col].getText().isBlank()) {
 					int randomItem = r.nextInt(words.length);
-					String randomWord = words[randomItem];		
+					String randomWord = words[randomItem];
 					randomItem = r.nextInt(randomWord.length());
-					String randomChar = randomWord.charAt(randomItem)+"";
-					fieldGrid[row][col].setText(randomChar.toUpperCase());					
+					String randomChar = randomWord.charAt(randomItem) + "";
+					fieldGrid[row][col].setText(randomChar.toUpperCase());
 				}
 			}
 		}
@@ -115,7 +110,6 @@ public class Main extends JPanel {
 				fieldGrid[row][col].setText("");
 			}
 		}
-		// int[] rowsUsed = new int[MAX_ROWS];
 		List<Point> pointsUsed = new ArrayList<Point>();
 		for (int w = 0; w < words.length; w++) {
 			int randDirection = (int) (Math.random() * (2 - 1 + 1) + 1);
@@ -125,7 +119,7 @@ public class Main extends JPanel {
 			word = word.toUpperCase();
 
 			int maxRow = MAX_ROWS - 1;
-			int maxCol = MAX_COLS - 1;// word.length();
+			int maxCol = MAX_COLS - 1;
 
 			if (horizontal) {
 				maxCol -= word.length();
@@ -133,16 +127,13 @@ public class Main extends JPanel {
 				maxRow -= word.length();
 			}
 
-			int randRow = 0;// (int) (Math.random() * (maxRow - 0 + 1) + 0);
-			int randCol = 0;// (int) (Math.random() * (maxCol - 0 + 1) + 0);
-//			System.out.println("MAX_ROWS: " + MAX_ROWS + " - " + word.length());
-//			System.out.println("Randrow: " + randRow + " - " + randCol);	
+			int randRow = 0;
+			int randCol = 0;
 			boolean valid = false;
 			int tries = 0;
 			do {
 				randRow = (int) (Math.random() * (maxRow - 0 + 1) + 0);
 				randCol = (int) (Math.random() * (maxCol - 0 + 1) + 0);
-				System.out.println("RanCol selected: " + randCol);
 
 				boolean conflict = false;
 				int colCheck = randCol;
@@ -154,7 +145,6 @@ public class Main extends JPanel {
 						if (fieldGrid[rowCheck][colCheck].getText() != word.charAt(l) + "") {
 							valid = false;
 							conflict = true;
-							System.out.println("Point conflict found");
 							break;
 						}
 					}
@@ -163,18 +153,12 @@ public class Main extends JPanel {
 					} else {
 						rowCheck++;
 					}
-//						if(randCol > maxCol) {
-//							randCol = maxCol;
-//						}
 				}
 				if (!conflict) {
 					valid = true;
 				}
 
 				tries++;
-				if (tries >= 99) {
-					System.out.println("Tries is more than 100");
-				}
 			} while (!valid && tries < 100);
 			try {
 				for (int l = 0; l < word.length(); l++) {
@@ -196,6 +180,10 @@ public class Main extends JPanel {
 
 	private class LetterTextField extends JTextField {
 
+		/**
+		 * Default
+		 */
+		private static final long serialVersionUID = 2911170811732842628L;
 		boolean selected = false;
 		boolean submitted = false;
 		int row, col;
@@ -209,6 +197,10 @@ public class Main extends JPanel {
 
 	private class WordLabel extends JLabel {
 
+		/**
+		 * Default
+		 */
+		private static final long serialVersionUID = -218613347643472006L;
 		String name = "";
 
 		public WordLabel(String name) {
@@ -270,11 +262,13 @@ public class Main extends JPanel {
 	}
 
 	private class SubmitAction extends AbstractAction {
+		/**
+		 * Default
+		 */
+		private static final long serialVersionUID = 3759121696154037200L;
+
 		public SubmitAction(String name) {
 			super(name);
-		}
-
-		public SubmitAction() {
 		}
 
 		@Override
@@ -307,7 +301,7 @@ public class Main extends JPanel {
 					if (fieldGrid[row][col].selected) {
 						fieldGrid[row][col].submitted = true;
 						fieldGrid[row][col].selected = false;
-						fieldGrid[row][col].setBackground(Color.GRAY);
+						fieldGrid[row][col].setBackground(SOLVED_BG);
 					}
 				}
 			}
@@ -315,6 +309,11 @@ public class Main extends JPanel {
 	}
 
 	private class ClearAction extends AbstractAction {
+		/**
+		 * Default
+		 */
+		private static final long serialVersionUID = 2359467297726922666L;
+
 		public ClearAction(String name) {
 			super(name);
 		}
@@ -322,25 +321,44 @@ public class Main extends JPanel {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			System.out.println("Clear");
-			for (int row = 0; row < fieldGrid.length; row++) {
-				for (int col = 0; col < fieldGrid[row].length; col++) {
+			Clear(true);
+		}
+	}
+
+	private void Clear(boolean onlySelected) {
+		for (int row = 0; row < fieldGrid.length; row++) {
+			for (int col = 0; col < fieldGrid[row].length; col++) {
+				if (onlySelected) {
+					if (fieldGrid[row][col].selected) {
+						fieldGrid[row][col].selected = false;
+						fieldGrid[row][col].setBackground(Color.WHITE);
+					}
+				} else {
 					fieldGrid[row][col].selected = false;
+					fieldGrid[row][col].submitted = false;
 					fieldGrid[row][col].setBackground(Color.WHITE);
 				}
+
 			}
 		}
 	}
 
 	private class ScrambleAction extends AbstractAction {
+
+		/**
+		 * Default
+		 */
+		private static final long serialVersionUID = 3858345266187730976L;
+
 		public ScrambleAction(String name) {
 			super(name);
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			System.out.println("Scramble words");
+			Clear(false);
 			GenerateWords();
-
+			FillSpacesWithLetters();
 		}
 	}
 
