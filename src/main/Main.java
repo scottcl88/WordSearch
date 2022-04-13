@@ -96,16 +96,26 @@ public class Main extends JPanel {
 				fieldGrid[row][col].setText("");
 			}
 		}
-		boolean horizontal = true;
-		int[] rowsUsed = new int[MAX_ROWS];
+		//int[] rowsUsed = new int[MAX_ROWS];
 		List<Point> pointsUsed = new ArrayList<Point>();
 		for (int w = 0; w < words.length; w++) {
+			int randDirection = (int) (Math.random() * (2 - 1 + 1) + 1);
+			boolean horizontal = randDirection == 1;
+			
 			String word = words[w];
 			word = word.toUpperCase();
+			
 			int maxRow = MAX_ROWS - 1;
-			int maxCol = MAX_COLS - word.length();
-			int randRow = (int) (Math.random() * (maxRow - 0 + 1) + 0);
-			int randCol = (int) (Math.random() * (maxCol - 0 + 1) + 0);
+			int maxCol = MAX_COLS - 1;//word.length();
+			
+			if(horizontal) {
+				maxCol -= word.length();
+			}else {
+				maxRow -= word.length();
+			}
+			
+			int randRow = 0;//(int) (Math.random() * (maxRow - 0 + 1) + 0);
+			int randCol = 0;//(int) (Math.random() * (maxCol - 0 + 1) + 0);
 //			System.out.println("MAX_ROWS: " + MAX_ROWS + " - " + word.length());
 //			System.out.println("Randrow: " + randRow + " - " + randCol);	
 			boolean valid = false;
@@ -113,12 +123,13 @@ public class Main extends JPanel {
 			do {
 				randRow = (int) (Math.random() * (maxRow - 0 + 1) + 0);
 				randCol = (int) (Math.random() * (maxCol - 0 + 1) + 0);
-				System.out.println("RanCol selected: "+randCol);
-				if (horizontal) {
+				System.out.println("RanCol selected: " + randCol);
+				
 					boolean conflict = false;
 					int colCheck = randCol;
+					int rowCheck = randRow;
 					for (int l = 0; l < word.length(); l++) {
-						final int testRow = randRow;
+						final int testRow = rowCheck;
 						final int testCol = colCheck;
 						if (pointsUsed.stream().filter(p -> p.y == testRow && p.x == testCol).findFirst().isPresent()) {
 							valid = false;
@@ -126,17 +137,21 @@ public class Main extends JPanel {
 							System.out.println("Point conflict found");
 							break;
 						}
-						colCheck++;
+						if (horizontal) {
+							colCheck++;
+						}else {
+							rowCheck++;
+						}
 //						if(randCol > maxCol) {
 //							randCol = maxCol;
 //						}
 					}
-					if(!conflict) {
+					if (!conflict) {
 						valid = true;
 					}
-				}
+				
 				tries++;
-				if(tries >= 99) {
+				if (tries >= 99) {
 					System.out.println("Tries is more than 100");
 				}
 			} while (!valid && tries < 100);
@@ -144,14 +159,15 @@ public class Main extends JPanel {
 				for (int l = 0; l < word.length(); l++) {
 					pointsUsed.add(new Point(randCol, randRow));
 					fieldGrid[randRow][randCol].setText(word.charAt(l) + "");
-					randCol++;
-					if (randCol >= MAX_ROWS) {
-						break;
+					if (horizontal) {
+						randCol++;
+					}else {
+						randRow++;
 					}
 				}
-			}catch(Exception ex) {
-				System.out.println("RandRow = "+randRow);
-				System.out.println("RandCol = "+randCol);
+			} catch (Exception ex) {
+				System.out.println("RandRow = " + randRow);
+				System.out.println("RandCol = " + randCol);
 				throw ex;
 			}
 		}
