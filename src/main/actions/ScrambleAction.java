@@ -28,8 +28,6 @@ public class ScrambleAction extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		game.clear(false);
-		game.generateWords();
-		game.fillSpacesWithLetters();
-		game.resetWordList();
+		game.start();
 	}
 }

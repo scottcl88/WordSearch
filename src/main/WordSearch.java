@@ -17,8 +17,7 @@ public class WordSearch {
 		Game game = new Game();
 		MainPanel mainPanel = new MainPanel(game);
 		game.setMainPanel(mainPanel);
-		game.generateWords();
-		game.fillSpacesWithLetters();
+		game.start();
 
 		JFrame frame = new JFrame("Word Search");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

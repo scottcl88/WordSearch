@@ -6,7 +6,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Point;
 import java.awt.font.TextAttribute;
+import java.util.ArrayList;
 import java.util.Map;
 import javax.swing.*;
 
@@ -22,7 +24,6 @@ public class MainPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -7478413237523422826L;
 	private static final float FIELD_PTS = 32f;
-	public static final Color SOLVED_BG = Color.LIGHT_GRAY;
 	private WordLabel[] wordLabelList = new WordLabel[Game.WORD_LIST.length];
 	private LetterTextField[][] fieldGrid = new LetterTextField[Game.MAX_ROWS][Game.MAX_COLS];
 
@@ -52,6 +53,56 @@ public class MainPanel extends JPanel {
 		createWordList();
 
 		createButtons();
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void submitWord() {
+		String selectedWord = "";
+		for (int row = 0; row < fieldGrid.length; row++) {
+			for (int col = 0; col < fieldGrid[row].length; col++) {
+				if (fieldGrid[row][col].isSelected()) {
+					selectedWord += fieldGrid[row][col].getText();
+				}
+			}
+		}
+
+		for (int w = 0; w < Game.WORD_LIST.length; w++) {
+			String word = Game.WORD_LIST[w];
+			if (word.equalsIgnoreCase(selectedWord)) {
+				Font font = wordLabelList[w].getFont();
+				Map attributes = font.getAttributes();
+				attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
+				wordLabelList[w].setFont(font.deriveFont(attributes));
+
+				ArrayList<Point> points = wordLabelList[w].getPoints();
+				System.out.println(points.toString());
+				for (int i = 0; i < points.size(); i++) {
+					Point p = points.get(i);
+					fieldGrid[p.y][p.x].setSubmitted(true);
+					fieldGrid[p.y][p.x].setSelected(false);
+					fieldGrid[p.y][p.x].setBackground(Game.SOLVED_BG);
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void clearSubmittedWords() {
+		for (int w = 0; w < Game.WORD_LIST.length; w++) {
+			Font font = wordLabelList[w].getFont();
+			Map attributes = font.getAttributes();
+			attributes.clear();
+			attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH);
+			wordLabelList[w].setFont(font.deriveFont(attributes));
+		}
+	}
+
+	public void clearLetters() {
+		for (int row = 0; row < fieldGrid.length; row++) {
+			for (int col = 0; col < fieldGrid[row].length; col++) {
+				fieldGrid[row][col].setText("");
+			}
+		}
 	}
 
 	private void createLetterPanels() {
