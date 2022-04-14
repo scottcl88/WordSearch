@@ -25,6 +25,6 @@ public class ClearAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		game.Clear(true);
+		game.clear(true);
 	}
 }

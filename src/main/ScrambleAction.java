@@ -25,8 +25,9 @@ public class ScrambleAction extends AbstractAction {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		game.Clear(false);
-		game.GenerateWords();
-		game.FillSpacesWithLetters();
+		game.clear(false);
+		game.generateWords();
+		game.fillSpacesWithLetters();
+		game.resetWordList();
 	}
 }
