@@ -30,14 +30,14 @@ public class Game {
 	private MainPanel mainPanel;
 
 	public enum Direction {
-		Horizontal, Vertical, DiagonalR2L, // right to left; \
-		DiagonalL2R// left to right; /
+		Horizontal, Vertical
 	}
+
 	public void loadWords() {
 		wordList = new ArrayList<String>();
-		try {					    
+		try {
 			File resource = new File(Thread.currentThread().getContextClassLoader().getResource("words.txt").toURI());
-			try (Stream<String> lines =  Files.lines(resource.toPath())) {
+			try (Stream<String> lines = Files.lines(resource.toPath())) {
 				wordList = lines.collect(Collectors.toList());
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -46,8 +46,8 @@ public class Game {
 			e1.printStackTrace();
 		}
 	}
-	
-	public List<String> getWordList(){
+
+	public List<String> getWordList() {
 		return wordList;
 	}
 
@@ -76,7 +76,23 @@ public class Game {
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
 		ArrayList<Point> pointsUsed = new ArrayList<Point>();
 		for (int w = 0; w < wordList.size(); w++) {
-			Direction direction = Direction.Horizontal;
+			int randomDirectionInt = (int) (Math.random() * (2 - 1 + 1) + 1);
+			int randomForwardInt = (int) (Math.random() * (2 - 1 + 1) + 1);
+			Direction direction;
+			switch (randomDirectionInt) {
+			case 1: {
+				direction = Direction.Vertical;
+				break;
+			}
+			case 2: {
+				direction = Direction.Horizontal;
+				break;
+			}
+			default: {
+				direction = Direction.Horizontal;
+			}
+			}
+			boolean isForward = randomForwardInt == 1;
 			String word = wordList.get(w);
 			word = word.toUpperCase();
 
@@ -86,9 +102,16 @@ public class Game {
 					System.out.println("Word eliminated due to no valid points found: " + word);
 					continue;
 				}
+				pointsUsed.addAll(wordPoints);
+				int letterIndex = 0;
+				int increment = 1;
+				if (!isForward) {
+					letterIndex = word.length() - 1;
+					increment = -1;
+				}
 				for (int l = 0; l < wordPoints.size(); l++) {
-					pointsUsed.add(wordPoints.get(l));
-					fieldGrid[wordPoints.get(l).y][wordPoints.get(l).x].setText(word.charAt(l) + "");
+					fieldGrid[wordPoints.get(l).y][wordPoints.get(l).x].setText(word.charAt(letterIndex) + "");
+					letterIndex += increment;
 				}
 				WordLabel[] wordLabelList = mainPanel.getWordLabelList();
 				for (int j = 0; j < wordLabelList.length; j++) {
@@ -113,16 +136,11 @@ public class Game {
 			maxCol -= word.length();
 			break;
 		}
-		case Vertical: {
+		case Vertical:
+		default: {
 			maxRow -= word.length();
 			break;
 		}
-		case DiagonalL2R:
-			break;
-		case DiagonalR2L:
-			break;
-		default:
-			break;
 		}
 
 		int randRow = 0;
@@ -158,16 +176,11 @@ public class Game {
 					colCheck++;
 					break;
 				}
-				case Vertical: {
+				case Vertical:
+				default: {
 					rowCheck++;
 					break;
 				}
-				case DiagonalL2R:
-					break;
-				case DiagonalR2L:
-					break;
-				default:
-					break;
 				}
 			}
 			if (!conflict) {
@@ -179,10 +192,9 @@ public class Game {
 		return !valid ? null : wordPoints;
 	}
 
-
 	public void clear(boolean onlySelected) {
-		if(!onlySelected) {
-			mainPanel.clearSubmittedWords();			
+		if (!onlySelected) {
+			mainPanel.clearSubmittedWords();
 		}
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
 		for (int row = 0; row < fieldGrid.length; row++) {
