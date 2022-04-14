@@ -3,6 +3,8 @@ package main;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.font.TextAttribute;
 import java.util.Map;
@@ -14,14 +16,14 @@ public class MainPanel extends JPanel {
 	 * Default
 	 */
 	private static final long serialVersionUID = -7478413237523422826L;
-	private static final int CLUSTER = 3;
+	//private static final int CLUSTER = 3;
 	private static final float FIELD_PTS = 32f;
-	private static final int GAP = 3;
 	private static final Color BG = Color.BLACK;
+	private static final Color BG2 = Color.BLUE;
+	private static final Color BG3 = Color.RED;
 	public static final Color SOLVED_BG = Color.LIGHT_GRAY;
-	public static final int TIMER_DELAY = 2 * 1000;
 	private WordLabel[] wordLabelList = new WordLabel[Game.WORD_LIST.length];
-	private LetterTextField[][] fieldGrid = new LetterTextField[Game.MAX_ROWS][Game.MAX_ROWS];
+	private LetterTextField[][] fieldGrid = new LetterTextField[Game.MAX_ROWS][Game.MAX_COLS];
 
 	private JPanel[][] panels;
 	private JPanel rightPanel = new JPanel();
@@ -35,22 +37,32 @@ public class MainPanel extends JPanel {
 	}
 
 	public MainPanel(Game game) {
-		JPanel mainPanel = new JPanel(new GridLayout(CLUSTER, CLUSTER));
-		JPanel mainPanel2 = new JPanel(new GridLayout(CLUSTER, CLUSTER));
+		JPanel mainPanel = new JPanel(new GridLayout(Game.MAX_ROWS, Game.MAX_COLS));
 		mainPanel.setBackground(BG);
-		panels = new JPanel[CLUSTER][CLUSTER];
+		panels = new JPanel[Game.MAX_ROWS][Game.MAX_COLS];
 		for (int i = 0; i < panels.length; i++) {
 			for (int j = 0; j < panels[i].length; j++) {
-				panels[i][j] = new JPanel(new GridLayout(CLUSTER, CLUSTER, 0, 0));
-				panels[i][j].setBackground(BG);
+				GridBagLayout layout=new GridBagLayout(); 
+				panels[i][j] = new JPanel();
+				panels[i][j].setLayout(layout); 
+				
+//				int randDirection = (int) (Math.random() * (2 - 1 + 1) + 1);
+//				boolean horizontal = randDirection == 1;
+//				if (horizontal) {
+//					panels[i][j].setBackground(BG2);
+//				} else {
+//					panels[i][j].setBackground(BG3);
+//				}				
 				mainPanel.add(panels[i][j]);
 			}
 		}
 
-		createPanels();
+		createTextFields();
 
 		createWordList();
 
+		//JPanel mainPanel2 = new JPanel(new GridLayout(Game.MAX_ROWS, Game.MAX_ROWS));
+		
 		JLabel emptyLabel = new JLabel();
 		emptyLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 		rightPanel.add(emptyLabel, BorderLayout.PAGE_END);
@@ -63,16 +75,16 @@ public class MainPanel extends JPanel {
 		emptyLabel3.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 		rightPanel.add(emptyLabel3, BorderLayout.PAGE_END);
 		rightPanel.add(new JButton(new ScrambleAction(game, "Scramble")), BorderLayout.PAGE_END);
-		mainPanel2.add(rightPanel);
+		//mainPanel2.add(rightPanel);
 
 		setLayout(new BorderLayout());
 		add(mainPanel, BorderLayout.WEST);
-		add(mainPanel2, BorderLayout.EAST);
+		add(rightPanel, BorderLayout.EAST);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void createWordList() {
-		rightPanel.setBorder(BorderFactory.createEmptyBorder(GAP, 15, GAP, 15));
+		rightPanel.setBorder(BorderFactory.createEmptyBorder(3, 15, 3, 15));
 		rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
 		JLabel wordsLabel = new JLabel("Words");
 		Font font = wordsLabel.getFont();
@@ -87,13 +99,15 @@ public class MainPanel extends JPanel {
 		}
 	}
 
-	private void createPanels() {
+	private void createTextFields() {
+		GridBagConstraints gbc = new GridBagConstraints();
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {
 				fieldGrid[row][col] = createField(row, col);
-				int i = row / 3;
-				int j = col / 3;
-				panels[i][j].add(fieldGrid[row][col]);
+				gbc.fill=GridBagConstraints.HORIZONTAL; 
+				gbc.gridx=0;   
+				gbc.gridy=0;  
+				panels[row][col].add(fieldGrid[row][col], gbc);
 			}
 		}
 	}

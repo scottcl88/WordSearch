@@ -25,6 +25,7 @@ public class WordSearch {
 		frame.getContentPane().add(mainPanel);
 		frame.pack();
 		frame.setLocationByPlatform(true);
+		frame.setResizable(false);
 		frame.setVisible(true);
 	}
 
