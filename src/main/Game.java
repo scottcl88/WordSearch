@@ -18,17 +18,17 @@ public class Game {
 	public static final int MAX_ROWS = 9;
 	public static final int MAX_COLS = 9;
 	private MainPanel mainPanel;
-	
+
 	public void setMainPanel(MainPanel mainPanel) {
 		this.mainPanel = mainPanel;
 	}
-	
+
 	public void resetWordList() {
 		for (int w = 0; w < Game.WORD_LIST.length; w++) {
 			mainPanel.getWordLabelList()[w] = new WordLabel(Game.WORD_LIST[w].toUpperCase());
 		}
 	}
-		
+
 	public void fillSpacesWithLetters() {
 		Random r = new Random();
 
@@ -47,12 +47,8 @@ public class Game {
 	}
 
 	public void generateWords() {
+		clearLetters();
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
-		for (int row = 0; row < fieldGrid.length; row++) {
-			for (int col = 0; col < fieldGrid[row].length; col++) {
-				fieldGrid[row][col].setText("");
-			}
-		}
 		ArrayList<Point> pointsUsed = new ArrayList<Point>();
 		for (int w = 0; w < WORD_LIST.length; w++) {
 			int randDirection = (int) (Math.random() * (2 - 1 + 1) + 1);
@@ -117,8 +113,8 @@ public class Game {
 				}
 				WordLabel[] wordLabelList = mainPanel.getWordLabelList();
 				for (int j = 0; j < wordLabelList.length; j++) {
-					if(wordLabelList[j].getWord().equalsIgnoreCase(word)) {
-						wordLabelList[j].setPoints(wordPoints);						
+					if (wordLabelList[j].getWord().equalsIgnoreCase(word)) {
+						wordLabelList[j].setPoints(wordPoints);
 					}
 				}
 			} catch (Exception ex) {
@@ -128,18 +124,28 @@ public class Game {
 			}
 		}
 	}
+	
+	public void clearLetters() {
+		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
+		for (int row = 0; row < fieldGrid.length; row++) {
+			for (int col = 0; col < fieldGrid[row].length; col++) {
+				fieldGrid[row][col].setText("");
+			}
+		}
+	}
+
 	public void clear(boolean onlySelected) {
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {
 				if (onlySelected) {
-					if (fieldGrid[row][col].selected) {
-						fieldGrid[row][col].selected = false;
+					if (fieldGrid[row][col].isSelected()) {
+						fieldGrid[row][col].setSelected(false);
 						fieldGrid[row][col].setBackground(Color.WHITE);
 					}
 				} else {
-					fieldGrid[row][col].selected = false;
-					fieldGrid[row][col].submitted = false;
+					fieldGrid[row][col].setSelected(false);
+					fieldGrid[row][col].setSubmitted(false);
 					fieldGrid[row][col].setBackground(Color.WHITE);
 				}
 

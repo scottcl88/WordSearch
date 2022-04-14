@@ -10,22 +10,26 @@ import java.awt.font.TextAttribute;
 import java.util.Map;
 import javax.swing.*;
 
+import main.actions.ClearAction;
+import main.actions.ScrambleAction;
+import main.actions.SelectAction;
+import main.actions.SubmitAction;
+
 public class MainPanel extends JPanel {
 
 	/**
 	 * Default
 	 */
 	private static final long serialVersionUID = -7478413237523422826L;
-	//private static final int CLUSTER = 3;
 	private static final float FIELD_PTS = 32f;
-	private static final Color BG = Color.BLACK;
-	private static final Color BG2 = Color.BLUE;
-	private static final Color BG3 = Color.RED;
 	public static final Color SOLVED_BG = Color.LIGHT_GRAY;
 	private WordLabel[] wordLabelList = new WordLabel[Game.WORD_LIST.length];
 	private LetterTextField[][] fieldGrid = new LetterTextField[Game.MAX_ROWS][Game.MAX_COLS];
 
+	private Game game;
+
 	private JPanel[][] panels;
+	private JPanel letterPanel = new JPanel(new GridLayout(Game.MAX_ROWS, Game.MAX_COLS));
 	private JPanel rightPanel = new JPanel();
 
 	public LetterTextField[][] getFieldGrid() {
@@ -37,32 +41,32 @@ public class MainPanel extends JPanel {
 	}
 
 	public MainPanel(Game game) {
-		JPanel mainPanel = new JPanel(new GridLayout(Game.MAX_ROWS, Game.MAX_COLS));
-		mainPanel.setBackground(BG);
-		panels = new JPanel[Game.MAX_ROWS][Game.MAX_COLS];
-		for (int i = 0; i < panels.length; i++) {
-			for (int j = 0; j < panels[i].length; j++) {
-				GridBagLayout layout=new GridBagLayout(); 
-				panels[i][j] = new JPanel();
-				panels[i][j].setLayout(layout); 
-				
-//				int randDirection = (int) (Math.random() * (2 - 1 + 1) + 1);
-//				boolean horizontal = randDirection == 1;
-//				if (horizontal) {
-//					panels[i][j].setBackground(BG2);
-//				} else {
-//					panels[i][j].setBackground(BG3);
-//				}				
-				mainPanel.add(panels[i][j]);
-			}
-		}
-
+		this.game = game;
+		
+		createLetterPanels();
 		createTextFields();
+
+		setLayout(new BorderLayout());
+		add(letterPanel, BorderLayout.WEST);
 
 		createWordList();
 
-		//JPanel mainPanel2 = new JPanel(new GridLayout(Game.MAX_ROWS, Game.MAX_ROWS));
-		
+		createButtons();
+	}
+
+	private void createLetterPanels() {
+		panels = new JPanel[Game.MAX_ROWS][Game.MAX_COLS];
+		for (int i = 0; i < panels.length; i++) {
+			for (int j = 0; j < panels[i].length; j++) {
+				GridBagLayout layout = new GridBagLayout();
+				panels[i][j] = new JPanel();
+				panels[i][j].setLayout(layout);
+				letterPanel.add(panels[i][j]);
+			}
+		}
+	}
+
+	private void createButtons() {
 		JLabel emptyLabel = new JLabel();
 		emptyLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 		rightPanel.add(emptyLabel, BorderLayout.PAGE_END);
@@ -75,10 +79,6 @@ public class MainPanel extends JPanel {
 		emptyLabel3.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 		rightPanel.add(emptyLabel3, BorderLayout.PAGE_END);
 		rightPanel.add(new JButton(new ScrambleAction(game, "Scramble")), BorderLayout.PAGE_END);
-		//mainPanel2.add(rightPanel);
-
-		setLayout(new BorderLayout());
-		add(mainPanel, BorderLayout.WEST);
 		add(rightPanel, BorderLayout.EAST);
 	}
 
@@ -104,16 +104,16 @@ public class MainPanel extends JPanel {
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {
 				fieldGrid[row][col] = createField(row, col);
-				gbc.fill=GridBagConstraints.HORIZONTAL; 
-				gbc.gridx=0;   
-				gbc.gridy=0;  
+				gbc.fill = GridBagConstraints.HORIZONTAL;
+				gbc.gridx = 0;
+				gbc.gridy = 0;
 				panels[row][col].add(fieldGrid[row][col], gbc);
 			}
 		}
 	}
 
 	private LetterTextField createField(int row, int col) {
-		LetterTextField letterTextField = new LetterTextField(row, col);
+		LetterTextField letterTextField = new LetterTextField();
 		letterTextField.setEnabled(false);
 		letterTextField.setHorizontalAlignment(JTextField.CENTER);
 		letterTextField.setFont(letterTextField.getFont().deriveFont(Font.BOLD, FIELD_PTS));

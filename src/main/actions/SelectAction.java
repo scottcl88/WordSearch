@@ -1,11 +1,14 @@
 /**
  * 
  */
-package main;
+package main.actions;
 
 import java.awt.Color;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+
+import main.LetterTextField;
+import main.MainPanel;
 
 /**
  * @author scott
@@ -25,8 +28,8 @@ public class SelectAction implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
-		fieldGrid[row][col].selected = !fieldGrid[row][col].selected;
-		if (fieldGrid[row][col].selected) {
+		fieldGrid[row][col].setSelected(!fieldGrid[row][col].isSelected());
+		if (fieldGrid[row][col].isSelected()) {
 			fieldGrid[row][col].setBackground(Color.GREEN);
 		} else {
 			fieldGrid[row][col].setBackground(Color.WHITE);

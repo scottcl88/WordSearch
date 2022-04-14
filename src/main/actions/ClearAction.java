@@ -1,11 +1,13 @@
 /**
  * 
  */
-package main;
+package main.actions;
 
 import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;
+
+import main.Game;
 
 /**
  * @author scott

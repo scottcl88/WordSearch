@@ -1,7 +1,7 @@
 /**
  * 
  */
-package main;
+package main.actions;
 
 import java.awt.Font;
 import java.awt.Point;
@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import javax.swing.AbstractAction;
+
+import main.Game;
+import main.LetterTextField;
+import main.MainPanel;
+import main.WordLabel;
 
 /**
  * @author scott
@@ -35,7 +40,7 @@ public class SubmitAction extends AbstractAction {
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {
-				if (fieldGrid[row][col].selected) {
+				if (fieldGrid[row][col].isSelected()) {
 					selectedWord += fieldGrid[row][col].getText();
 				}
 			}
@@ -54,8 +59,8 @@ public class SubmitAction extends AbstractAction {
 				System.out.println(points.toString());
 				for(int i = 0; i < points.size(); i ++) {
 					Point p = points.get(i);
-					fieldGrid[p.y][p.x].submitted = true;
-					fieldGrid[p.y][p.x].selected = false;
+					fieldGrid[p.y][p.x].setSubmitted(true);
+					fieldGrid[p.y][p.x].setSelected(false);
 					fieldGrid[p.y][p.x].setBackground(MainPanel.SOLVED_BG);
 				}
 			}
