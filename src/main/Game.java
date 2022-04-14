@@ -5,8 +5,15 @@ package main;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Scott Lewis
@@ -14,7 +21,7 @@ import java.util.Random;
  */
 public class Game {
 
-	public static final String[] WORD_LIST = { "benji", "macie", "betsy" };
+	private List<String> wordList;
 	public static final int MAX_ROWS = 15;
 	public static final int MAX_COLS = 15;
 	public static final Color SOLVED_BG = Color.LIGHT_GRAY;
@@ -25,6 +32,23 @@ public class Game {
 	public enum Direction {
 		Horizontal, Vertical, DiagonalR2L, // right to left; \
 		DiagonalL2R// left to right; /
+	}
+	public void loadWords() {
+		wordList = new ArrayList<String>();
+		try {					    
+			File resource = new File(Thread.currentThread().getContextClassLoader().getResource("words.txt").toURI());
+			try (Stream<String> lines =  Files.lines(resource.toPath())) {
+				wordList = lines.collect(Collectors.toList());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+	}
+	
+	public List<String> getWordList(){
+		return wordList;
 	}
 
 	public void setMainPanel(MainPanel mainPanel) {
@@ -37,8 +61,8 @@ public class Game {
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {
 				if (fieldGrid[row][col].getText().isBlank()) {
-					int randomItem = r.nextInt(WORD_LIST.length);
-					String randomWord = WORD_LIST[randomItem];
+					int randomItem = r.nextInt(wordList.size());
+					String randomWord = wordList.get(randomItem);
 					randomItem = r.nextInt(randomWord.length());
 					String randomChar = randomWord.charAt(randomItem) + "";
 					fieldGrid[row][col].setText(randomChar.toUpperCase());
@@ -51,9 +75,9 @@ public class Game {
 		mainPanel.clearLetters();
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
 		ArrayList<Point> pointsUsed = new ArrayList<Point>();
-		for (int w = 0; w < WORD_LIST.length; w++) {
+		for (int w = 0; w < wordList.size(); w++) {
 			Direction direction = Direction.Horizontal;
-			String word = WORD_LIST[w];
+			String word = wordList.get(w);
 			word = word.toUpperCase();
 
 			try {
@@ -157,7 +181,9 @@ public class Game {
 
 
 	public void clear(boolean onlySelected) {
-		mainPanel.clearSubmittedWords();
+		if(!onlySelected) {
+			mainPanel.clearSubmittedWords();			
+		}
 		LetterTextField[][] fieldGrid = mainPanel.getFieldGrid();
 		for (int row = 0; row < fieldGrid.length; row++) {
 			for (int col = 0; col < fieldGrid[row].length; col++) {

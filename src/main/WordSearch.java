@@ -14,12 +14,15 @@ public class WordSearch {
 
 
 	private static void createAndShowGui() {
+		JFrame frame = new JFrame("Word Search");
+		
 		Game game = new Game();
-		MainPanel mainPanel = new MainPanel(game);
+		MainPanel mainPanel = new MainPanel(frame, game);
+		game.loadWords();
+		mainPanel.setup();
 		game.setMainPanel(mainPanel);
 		game.start();
 
-		JFrame frame = new JFrame("Word Search");
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().add(mainPanel);
 		frame.pack();

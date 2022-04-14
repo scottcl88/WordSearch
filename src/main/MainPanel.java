@@ -1,7 +1,6 @@
 package main;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -24,10 +23,11 @@ public class MainPanel extends JPanel {
 	 */
 	private static final long serialVersionUID = -7478413237523422826L;
 	private static final float FIELD_PTS = 32f;
-	private WordLabel[] wordLabelList = new WordLabel[Game.WORD_LIST.length];
+	private WordLabel[] wordLabelList;
 	private LetterTextField[][] fieldGrid = new LetterTextField[Game.MAX_ROWS][Game.MAX_COLS];
 
 	private Game game;
+	private JFrame frame;
 
 	private JPanel[][] panels;
 	private JPanel letterPanel = new JPanel(new GridLayout(Game.MAX_ROWS, Game.MAX_COLS));
@@ -41,9 +41,14 @@ public class MainPanel extends JPanel {
 		return wordLabelList;
 	}
 
-	public MainPanel(Game game) {
+	public MainPanel(JFrame frame, Game game) {
+		this.frame = frame;
 		this.game = game;
-		
+	}
+	
+	public void setup() {
+		wordLabelList = new WordLabel[game.getWordList().size()];
+
 		createLetterPanels();
 		createTextFields();
 
@@ -66,16 +71,18 @@ public class MainPanel extends JPanel {
 			}
 		}
 
-		for (int w = 0; w < Game.WORD_LIST.length; w++) {
-			String word = Game.WORD_LIST[w];
+		boolean foundWord = false;
+		for (int w = 0; w < game.getWordList().size(); w++) {
+			String word = game.getWordList().get(w);
 			if (word.equalsIgnoreCase(selectedWord)) {
+				foundWord = true;
+
 				Font font = wordLabelList[w].getFont();
 				Map attributes = font.getAttributes();
 				attributes.put(TextAttribute.STRIKETHROUGH, TextAttribute.STRIKETHROUGH_ON);
 				wordLabelList[w].setFont(font.deriveFont(attributes));
 
 				ArrayList<Point> points = wordLabelList[w].getPoints();
-				System.out.println(points.toString());
 				for (int i = 0; i < points.size(); i++) {
 					Point p = points.get(i);
 					fieldGrid[p.y][p.x].setSubmitted(true);
@@ -84,11 +91,14 @@ public class MainPanel extends JPanel {
 				}
 			}
 		}
+		if (!foundWord) {
+			JOptionPane.showMessageDialog(frame, "No word found with selected letters");
+		}
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void clearSubmittedWords() {
-		for (int w = 0; w < Game.WORD_LIST.length; w++) {
+		for (int w = 0; w < game.getWordList().size(); w++) {
 			Font font = wordLabelList[w].getFont();
 			Map attributes = font.getAttributes();
 			attributes.clear();
@@ -144,8 +154,8 @@ public class MainPanel extends JPanel {
 		attributes.put(TextAttribute.SIZE, 18);
 		wordsLabel.setFont(font.deriveFont(attributes));
 		rightPanel.add(wordsLabel);
-		for (int w = 0; w < Game.WORD_LIST.length; w++) {
-			wordLabelList[w] = new WordLabel(Game.WORD_LIST[w].toUpperCase());
+		for (int w = 0; w < game.getWordList().size(); w++) {
+			wordLabelList[w] = new WordLabel(game.getWordList().get(w).toUpperCase());
 			rightPanel.add(wordLabelList[w]);
 		}
 	}
