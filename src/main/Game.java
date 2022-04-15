@@ -5,10 +5,14 @@ package main;
 
 import java.awt.Color;
 import java.awt.Point;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -36,13 +40,14 @@ public class Game {
 	public void loadWords() {
 		wordList = new ArrayList<String>();
 		try {
-			File resource = new File(Thread.currentThread().getContextClassLoader().getResource("words.txt").toURI());
-			try (Stream<String> lines = Files.lines(resource.toPath())) {
-				wordList = lines.collect(Collectors.toList());
-			} catch (IOException e) {
-				e.printStackTrace();
+			InputStream res = Game.class.getResourceAsStream("/words.txt");
+			BufferedReader reader = new BufferedReader(new InputStreamReader(res));
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				wordList.add(line);
 			}
-		} catch (URISyntaxException e1) {
+			reader.close();
+		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 	}
